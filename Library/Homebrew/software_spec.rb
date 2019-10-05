@@ -276,12 +276,18 @@ class Bottle
     end
 
     def bintray
-      "#{name}-#{version}#{extname}"
+      #"#{name}-#{version}#{extname}"
+      "#{drop_atversion(name)}-#{version}#{extname}"
     end
 
     def extname
       s = rebuild.positive? ? ".#{rebuild}" : ""
       ".#{tag}.bottle#{s}.tar.gz"
+    end
+
+    private
+    def drop_atversion(version_named)
+      version_named.split('@')[0]
     end
   end
 
@@ -345,10 +351,17 @@ class BottleSpecification
     @cellar = Homebrew::DEFAULT_CELLAR
     @collector = Utils::Bottles::Collector.new
     @root_url_specs = {}
+    @use_core_bintray = false
+  end
+
+  def use_core_bottles!
+    @use_core_bintray = true
   end
 
   def root_url(var = nil, specs = {})
-    if var.nil?
+    if @use_core_bintray
+      @root_url ||= "#{HOMEBREW_BOTTLE_DOMAIN}/#{Utils::Bottles::Bintray.repository}"
+    elsif var.nil?
       @root_url ||= "#{HOMEBREW_BOTTLE_DOMAIN}/#{Utils::Bottles::Bintray.repository(tap)}"
     else
       @root_url = var
