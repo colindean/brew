@@ -42,6 +42,14 @@ module Cask
         )
       end
 
+      def self.only_has_fonts(casks)
+        casks.all? do |cask|
+          cask.artifacts.all? do |artifact|
+            artifact.class == ::Cask::Artifact::Font
+          end
+        end
+      end
+
       def self.install_casks(
         *casks,
         verbose: nil,
@@ -52,7 +60,9 @@ module Cask
         quarantine: nil,
         quiet: nil
       )
-        odie "Installing casks is supported only on macOS" unless OS.mac?
+        allowed = OS.mac? or self.only_has_fonts(casks)
+        odie "Installing casks is supported only on macOS unless the casks contains only fonts" unless allowed
+
 
         options = {
           verbose:        verbose,
