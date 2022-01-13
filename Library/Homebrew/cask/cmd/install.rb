@@ -60,7 +60,7 @@ module Cask
         quarantine: nil,
         quiet: nil
       )
-        allowed = OS.mac? or self.only_has_fonts(casks)
+        allowed = OS.mac? || self.only_has_fonts(casks)
         odie "Installing casks is supported only on macOS unless the casks contains only fonts" unless allowed
 
 
